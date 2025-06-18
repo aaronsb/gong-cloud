@@ -139,7 +139,11 @@ export class UserService {
       // Step 3: Fetch transcript to find speaker IDs
       console.log('Fetching transcript to get all speakers...');
       const transcriptResponse = await this.apiClient.getTranscripts([callId]);
-      const transcripts = transcriptResponse.transcripts || [];
+      // The API returns callTranscripts array with transcript data
+      let transcripts = [];
+      if (transcriptResponse.callTranscripts && transcriptResponse.callTranscripts.length > 0) {
+        transcripts = transcriptResponse.callTranscripts[0].transcript || [];
+      }
       
       // Extract all speaker IDs from transcript
       const speakerIds = new Set<string>();
@@ -193,8 +197,9 @@ export class UserService {
         if (!speakerMap[id]) {
           speakerMap[id] = {
             id,
-            name: `Person ${id.substring(0, 4)}`,
-            company: 'Unknown'
+            name: `Speaker ${id.substring(0, 8)}`,
+            company: 'Unknown',
+            role: 'Unknown'
           };
         }
       });

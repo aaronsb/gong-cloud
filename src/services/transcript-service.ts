@@ -30,8 +30,9 @@ export class TranscriptService {
   private processSegment(segment: any, speakerMap: SpeakerMap): any {
     const speaker = speakerMap[segment.speakerId] || {
       id: segment.speakerId,
-      name: `Unknown (${segment.speakerId.substring(0, 8)})`,
-      company: 'Unknown'
+      name: `Speaker ${segment.speakerId.substring(0, 8)}`,
+      company: 'Unknown',
+      role: 'Unknown'
     };
 
     return {
@@ -56,7 +57,11 @@ export class TranscriptService {
   public async getRawTranscript(callId: string): Promise<any> {
     try {
       const response = await this.apiClient.getTranscripts([callId]);
-      return response.transcripts || [];
+      // The API returns callTranscripts array with transcript data
+      if (response.callTranscripts && response.callTranscripts.length > 0) {
+        return response.callTranscripts[0].transcript || [];
+      }
+      return [];
     } catch (error) {
       console.error(`Error getting raw transcript: ${error}`);
       throw error;
@@ -79,7 +84,11 @@ export class TranscriptService {
       
       // Get transcript
       const transcriptResponse = await this.apiClient.getTranscripts([callId]);
-      const transcripts = transcriptResponse.transcripts || [];
+      // The API returns callTranscripts array with transcript data
+      let transcripts = [];
+      if (transcriptResponse.callTranscripts && transcriptResponse.callTranscripts.length > 0) {
+        transcripts = transcriptResponse.callTranscripts[0].transcript || [];
+      }
       
       // Get speaker map
       const speakerMap = await this.userService.getSpeakerMap(callId, call);
