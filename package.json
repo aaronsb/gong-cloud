@@ -4,10 +4,24 @@
   "description": "Gong Cloud MCP Server for interacting with Gong API",
   "main": "build/src/index.js",
   "type": "module",
+  "bin": {
+    "gong-cloud": "./build/src/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aaronsb/gong-cloud.git"
+  },
+  "keywords": [
+    "mcp",
+    "gong",
+    "api",
+    "modelcontextprotocol"
+  ],
   "scripts": {
     "build": "tsc",
     "start": "node build/src/index.js",
     "dev": "tsc --watch & nodemon --watch build --delay 1 build/src/index.js",
+    "prepublishOnly": "npm run build",
     "test:connection": "node scripts/test-api.js",
     "test:find-user": "node scripts/find-user.js",
     "test:get-call": "node scripts/get-specific-call.js",
